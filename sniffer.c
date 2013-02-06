@@ -2,7 +2,7 @@
    sniffer.c
 
    Example packet sniffer using the libpcap packet capture library available
-   from http://www.tcpdump.org. Build it on Linux with the following command:
+   from http://www.tcpdump.org.
   
    ------------------------------------------
 
