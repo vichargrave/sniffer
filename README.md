@@ -1,7 +1,7 @@
 sniffer
 =======
 
-Packet sniffer based on libpcap
+Example packet sniffer code for the article 'Develop a Packet Sniffer with libpcap'
 
 Build
 =====
