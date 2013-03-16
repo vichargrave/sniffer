@@ -53,7 +53,7 @@ pcap_t* open_pcap_socket(char* device, const char* bpfstr)
     }
     
     // Open the device for live capture, as opposed to reading a packet
-    // captue file.
+    // capture file.
     if ((pd = pcap_open_live(device, BUFSIZ, 1, 0, errbuf)) == NULL)
     {
         printf("pcap_open_live(): %s\n", errbuf);
