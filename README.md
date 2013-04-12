@@ -6,7 +6,8 @@ Example packet sniffer code for the article 'Develop a Packet Sniffer with libpc
 Build
 =====
 
-Build the sniffer by running 'make'.
+1. cd to the 'sniffer' directory.
+2. Type 'make'.
 
 Run
 ===
