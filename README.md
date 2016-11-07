@@ -1,6 +1,6 @@
 # sniffer
 
-Example packet sniffer code for the article [_Develop a Packet Sniffer with libpcap_] (http://vichargrave.com/develop-a-packet-sniffer-with-libpcap/).
+Example code from my Develop a Packet Sniffer with libpcap blog.
 
 ## Build
 
