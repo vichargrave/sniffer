@@ -1,4 +1,4 @@
-CC			= gcc
+CC		= gcc
 CFLAGS		= -c -Wall -D_GNU_SOURCE
 LDFLAGS		= -lpcap
 SOURCES		= sniffer.c
