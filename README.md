@@ -4,8 +4,10 @@ Example code from my Develop a Packet Sniffer with libpcap blog.
 
 ## Build
 
-1. cd to the 'sniffer' directory.
-2. Type 'make'.
+1. Install the pcap library by typing 'sudo apt-get install libpcap-dev'.
+2. cd to the 'sniffer' directory.
+3. Type 'make'.
+4. If the previous method doesn't work, type 'gcc -o sniffer sniffer.c -lpcap -Wall -D_GNU_SOURCE -I.'.
 
 ## Run
 
