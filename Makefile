@@ -9,7 +9,7 @@ TARGET		= sniffer
 all: $(SOURCES) $(TARGET)
 
 $(TARGET): $(OBJECTS) 
-	$(CC) $(LDFLAGS) $(OBJECTS) -o $@
+	$(CC) $(OBJECTS) -o $@ $(LDFLAGS) 
 
 .c.o:
 	$(CC) $(CFLAGS) $(INCLUDES) $< -o $@
