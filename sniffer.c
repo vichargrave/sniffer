@@ -121,7 +121,7 @@ void packet_handler(u_char *user, const struct pcap_pkthdr *packethdr, const u_c
     char srcip[256];
     char dstip[256];
  
-    // Skip the datalink layer header and get the IP header fields.
+    //Skip the datalink layer header and get the IP header fields.
     packetptr += linkhdrlen;
     iphdr = (struct ip*)packetptr;
     strcpy(srcip, inet_ntoa(iphdr->ip_src));
