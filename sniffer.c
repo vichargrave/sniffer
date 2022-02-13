@@ -45,35 +45,35 @@ pcap_t* create_pcap_handle(char* device, const char* bpfstr)
     // If no network interface (device) is specfied, get the first one.
     if (!*device) {
     	if (pcap_findalldevs(&devices, errbuf)) {
-	        printf("pcap_findalldevs(): %s\n", errbuf);
-	        return NULL;
-	    }
-	    strcpy(device, devices[0].name);
+            fprintf(stderr, "pcap_findalldevs(): %s\n", errbuf);
+            return NULL;
+        }
+        strcpy(device, devices[0].name);
     }
 
     // Get network device source IP address and netmask.
     if (pcap_lookupnet(device, &srcip, &netmask, errbuf) == -1) {
-	    fprintf(stderr, "pcap_lookupnet: %s\n", errbuf);
-	    return NULL;
+        fprintf(stderr, "pcap_lookupnet: %s\n", errbuf);
+        return NULL;
     }
 
     // Open the device for live capture.
     handle = pcap_open_live(device, BUFSIZ, 1, 1000, errbuf);
     if (handle == NULL) {
-	    fprintf(stderr, "pcap_open_live(): %s\n", errbuf);
-	    return NULL;
+        fprintf(stderr, "pcap_open_live(): %s\n", errbuf);
+        return NULL;
     }
 
     // Convert the packet filter epxression into a packet filter binary.
     if (pcap_compile(handle, &bpf, bpfstr, 0, netmask) == -1) {
-	    fprintf(stderr, "pcap_compile(): %s\n", pcap_geterr(handle));
-	    return NULL;
+        fprintf(stderr, "pcap_compile(): %s\n", pcap_geterr(handle));
+        return NULL;
     }
 
     // Bind the packet filter to the libpcap handle.    
     if (pcap_setfilter(handle, &bpf) == -1) {
-	    fprintf(stderr, "pcap_setfilter(): %s\n", pcap_geterr(handle));
-	    return NULL;
+        fprintf(stderr, "pcap_setfilter(): %s\n", pcap_geterr(handle));
+        return NULL;
     }
 
     return handle;
@@ -175,8 +175,7 @@ void bailout(int signo)
 {
     struct pcap_stat stats;
  
-    if (pcap_stats(handle, &stats) >= 0)
-    {
+    if (pcap_stats(handle, &stats) >= 0) {
         printf("%d packets received\n", stats.ps_recv);
         printf("%d packets dropped\n\n", stats.ps_drop);
     }
@@ -212,8 +211,7 @@ int main(int argc, char *argv[])
     }
 
     // Get the packet capture filter expression, if any.
-    for (int i = optind; i < argc; i++)
-    {
+    for (int i = optind; i < argc; i++) {
         strcat(bpfstr, argv[i]);
         strcat(bpfstr, " ");
     }
@@ -225,19 +223,19 @@ int main(int argc, char *argv[])
     // Create packet capture handle.
     handle = create_pcap_handle(device, bpfstr);
     if (handle == NULL) {
-	    return -1;
+        return -1;
     }
 
     // Get the type of link layer.
     get_link_header_len(handle);
     if (linkhdrlen == 0) {
-	    return -1;
+        return -1;
     }
 
     // Start the packet capture with a set count or continually if the count is 0.
     if (pcap_loop(handle, count, packet_handler, (u_char*)NULL) < 0) {
-    	fprintf(stderr, "pcap_loop failed: %s\n", pcap_geterr(handle));
-	    return -1;
+        fprintf(stderr, "pcap_loop failed: %s\n", pcap_geterr(handle));
+        return -1;
     }
     
     return 0;
