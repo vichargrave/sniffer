@@ -35,6 +35,7 @@
 *.dylib
 
 # Executables
+sniffer
 *.exe
 *.out
 *.app
