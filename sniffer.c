@@ -32,6 +32,7 @@
 
 pcap_t* handle;
 int linkhdrlen;
+int packets;
 
 pcap_t* create_pcap_handle(char* device, const char* bpfstr)
 {
@@ -121,7 +122,8 @@ void packet_handler(u_char *user, const struct pcap_pkthdr *packethdr, const u_c
     char srcip[256];
     char dstip[256];
  
-    //Skip the datalink layer header and get the IP header fields.
+
+    // Skip the datalink layer header and get the IP header fields.
     packetptr += linkhdrlen;
     iphdr = (struct ip*)packetptr;
     strcpy(srcip, inet_ntoa(iphdr->ip_src));
@@ -149,7 +151,8 @@ void packet_handler(u_char *user, const struct pcap_pkthdr *packethdr, const u_c
                (tcphdr->th_flags & TH_SYN ? 'F' : '*'),
                ntohl(tcphdr->th_seq), ntohl(tcphdr->th_ack),
                ntohs(tcphdr->th_win), 4*tcphdr->th_off);
-	printf("+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+\n\n");
+        printf("+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+\n\n");
+        packets += 1;
         break;
  
     case IPPROTO_UDP:
@@ -157,7 +160,8 @@ void packet_handler(u_char *user, const struct pcap_pkthdr *packethdr, const u_c
         printf("UDP  %s:%d -> %s:%d\n", srcip, ntohs(udphdr->uh_sport),
                dstip, ntohs(udphdr->uh_dport));
         printf("%s\n", iphdrInfo);
-	printf("+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+\n\n");
+	    printf("+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+\n\n");
+        packets += 1;
         break;
  
     case IPPROTO_ICMP:
@@ -166,17 +170,19 @@ void packet_handler(u_char *user, const struct pcap_pkthdr *packethdr, const u_c
         printf("%s\n", iphdrInfo);
         printf("Type:%d Code:%d ID:%d Seq:%d\n", icmphdr->icmp_type, icmphdr->icmp_code,
                ntohs(icmphdr->icmp_hun.ih_idseq.icd_id), ntohs(icmphdr->icmp_hun.ih_idseq.icd_seq));
-	printf("+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+\n\n");
+	    printf("+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+\n\n");
+        packets += 1;
         break;
     }
 }
 
-void bailout(int signo)
+void stop_capture(int signo)
 {
     struct pcap_stat stats;
  
     if (pcap_stats(handle, &stats) >= 0) {
-        printf("%d packets received\n", stats.ps_recv);
+        printf("\n%d packets captured\n", packets);
+        printf("%d packets received by filter\n", stats.ps_recv); 
         printf("%d packets dropped\n\n", stats.ps_drop);
     }
     pcap_close(handle);
@@ -216,9 +222,9 @@ int main(int argc, char *argv[])
         strcat(bpfstr, " ");
     }
 
-    signal(SIGINT, bailout);
-    signal(SIGTERM, bailout);
-    signal(SIGQUIT, bailout);
+    signal(SIGINT, stop_capture);
+    signal(SIGTERM, stop_capture);
+    signal(SIGQUIT, stop_capture);
     
     // Create packet capture handle.
     handle = create_pcap_handle(device, bpfstr);
@@ -237,6 +243,6 @@ int main(int argc, char *argv[])
         fprintf(stderr, "pcap_loop failed: %s\n", pcap_geterr(handle));
         return -1;
     }
-    
-    return 0;
+
+    stop_capture(0);
 }
