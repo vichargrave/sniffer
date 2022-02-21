@@ -67,7 +67,6 @@ pcap_t* create_pcap_handle(char* device, char* filter)
     }
 
     // Convert the packet filter epxression into a packet filter binary.
-    // char filter[] = "udp port 53";
     if (pcap_compile(handle, &bpf, filter, 1, netmask) == PCAP_ERROR) {
         fprintf(stderr, "pcap_compile(): %s\n", pcap_geterr(handle));
         return NULL;
